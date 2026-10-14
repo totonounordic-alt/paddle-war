@@ -36,10 +36,10 @@ button,.btn{font:inherit;font-size:3cqw;line-height:1;color:var(--c);background:
 @media(orientation:portrait){#rot{display:flex}}
 </style></head><body>
 <div id="crt"><div id="stage"><canvas id="cv" width="600" height="360"></canvas><div id="hud"><span id="sc">00</span></div>
-<div class="scr on" id="menu"><p class="dim s">KEEN OS V1.0 &nbsp;640K RAM OK</p><h1>PADDLE WAR</h1><p>C:\&gt;PADDLE.EXE<span class="cur">_</span></p>
+<div class="scr on" id="menu"><p class="dim s">KEEN OS V<span id="ver">DEV</span> &nbsp;640K RAM OK</p><h1>PADDLE WAR</h1><p>C:\&gt;PADDLE.EXE<span class="cur">_</span></p>
 <ul id="mi"><li data-a="play">PELAA</li><li data-a="scores">ENNÄTYKSET</li><li data-a="snd">ÄÄNET: <b id="sv">POIS</b></li></ul></div>
 <div class="scr" id="over"><h1>GAME OVER</h1><h2 id="fs">00</h2><p id="tt"></p><p class="dim s">KOSKETA JATKAAKSESI<span class="cur">_</span></p></div>
-<div class="scr" id="nm"><h2>UUSI ENNÄTYS! NIMI:</h2><div id="slots"></div><div class="btn" id="ok">OK</div><p class="dim s">ÄLÄ KIROILE. PHOEBE KUULEE.</p></div>
+<div class="scr" id="nm"><h2>UUSI ENNÄTYS! NIMI:</h2><div id="slots"></div><div class="btn" id="ok">OK</div><p class="dim s">ÄLÄ KIROILE. PELIHALLIN VALVOJA KATSOO.</p></div>
 <div class="scr" id="hs"><h2>TOP 10</h2><ul id="hl"></ul><p class="dim s" id="hn"></p></div>
 </div></div>
 <div id="rot">KÄÄNNÄ PUHELIN<br>VAAKAAN ↻</div>
@@ -47,7 +47,7 @@ button,.btn{font:inherit;font-size:3cqw;line-height:1;color:var(--c);background:
 const $=s=>document.querySelector(s),cv=$('#cv'),x=cv.getContext('2d'),W=600,H=360,PH=64,BS=10,PX=36;
 let st='menu',sel=0,snd=localStorage.snd==='1',tok=null,tops=[],score=0,last=0,py=148,cy=148,bx=0,by=0,bvx=0,bvy=0,sp=260,off=0,overAt=0,ci=0,sub=0,t=0;
 let L=(localStorage.nm||'AAA').split('');const keys={};
-const TAUNT=['*PIIP* - PHOEBE KIROILISI JO','MS. PAC-MAN OLISI JO KIROTTU','PALLO OHI. ÄLÄ KIROILE.','SEURAAVALLA KERRALLA PAREMMIN'];
+const TAUNT=['PUHALLA KASETTIIN JA YRITÄ UUDELLEEN','FINISH HIM! ...PALLO VOITTI','NOKIAN SNAKE KESTI PIDEMPÄÄN','TAMAGOTCHIKIN SELVISI PIDEMPÄÄN','HADOUKEN EI AUTTANUT TÄHÄN PALLOON','GAME OVER, MAN! GAME OVER!'];
 function show(id){st=id;document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id===id));$('#hud').style.display=id==='play'?'block':'none'}
 let ac;function beep(f,d=.08,ty='square'){if(!snd)return;try{ac=ac||new(window.AudioContext||webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.value=.08;g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 const items=[...document.querySelectorAll('#mi li')];
@@ -79,7 +79,7 @@ function drawNm(){$('#slots').innerHTML=L.map((c,i)=>`<div class=col><button dat
  document.querySelectorAll('#slots button').forEach(b=>b.addEventListener('pointerdown',e=>{e.stopPropagation();chg(+b.dataset.i,+b.dataset.d)}))}
 function chg(i,d){ci=i;L[i]=String.fromCharCode((L[i].charCodeAt(0)-65+d+26)%26+65);beep(500,.04);drawNm()}
 async function submit(){if(sub)return;sub=1;const nm=L.join('');localStorage.nm=nm;try{const r=await fetch('/api/scores',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:nm,score,token:tok})});const j=await r.json();
- if(j.scores){tops=j.scores;show('hs');render({name:j.name,score});$('#hn').textContent=j.name==='***'?'*PIIP* PHOEBE-SUODATIN PÄÄLLÄ':'KOSKETA PALATAKSESI'}else await showScores()}catch(e){await showScores()}}
+ if(j.scores){tops=j.scores;show('hs');render({name:j.name,score});$('#hn').textContent=j.name==='***'?'*PIIP* PELIHALLIN VALVOJA PUUTTUI ASIAAN':'KOSKETA PALATAKSESI'}else await showScores()}catch(e){await showScores()}}
 $('#ok').addEventListener('pointerdown',e=>{e.stopPropagation();submit()});
 const stg=$('#stage');function mv(e){if(st!=='play')return;const r=cv.getBoundingClientRect();py=Math.max(0,Math.min(H-PH,(e.clientY-r.top)/r.height*H-PH/2))}
 stg.addEventListener('pointermove',mv);stg.addEventListener('pointerdown',e=>{mv(e);if(st==='over')next();else if(st==='hs')show('menu')});
@@ -91,5 +91,5 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=1;const go=k=
  else if(st==='play'&&k==='escape')show('menu');
  if(['arrowup','arrowdown',' '].includes(k))e.preventDefault()});
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
-mark();requestAnimationFrame(loop);if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');
+const BUILD='__BUILD__';$('#ver').textContent=BUILD.startsWith('__')?'1.0.DEV':BUILD;mark();requestAnimationFrame(loop);if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');
 </script></body></html>
