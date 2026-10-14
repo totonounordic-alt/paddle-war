@@ -10,41 +10,41 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;font-family:'Press Start 2P','Courier New',monospace;color:var(--g)}
 #crt{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;container-type:size;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-#stage{position:relative;container-type:size;aspect-ratio:5/3;width:min(100cqw,166.6cqh);background:#020a04;border-radius:2% / 3.4%;overflow:hidden;box-shadow:inset 0 0 14cqw #000,0 0 4cqw #0f04;animation:fl .13s infinite}
-#stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(#0000 0 2px,#0005 2px 4px),radial-gradient(ellipse,#0000 50%,#000c 100%)}
+#stage{position:relative;container-type:size;aspect-ratio:5/3;width:min(100cqw,166.6cqh);background:#020a04;border-radius:2% / 3.4%;overflow:hidden;box-shadow:inset 0 0 5cqw #000a,0 0 4cqw #0f04;animation:fl .13s infinite}
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(#0000 0 2px,#0005 2px 4px),radial-gradient(ellipse,#0000 65%,#0007 100%)}
 @keyframes fl{50%{filter:brightness(1.05)}}
 @keyframes bl{50%{opacity:0}}
 canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
 #hud{position:absolute;top:3cqw;left:0;right:0;text-align:center;font-size:6cqw;color:var(--y);text-shadow:0 0 1cqw var(--y);display:none}
-.scr{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5cqw 8cqw;font-size:3cqw;line-height:1.7;text-shadow:0 0 .8cqw currentColor}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:3cqw 8cqw;font-size:3cqw;line-height:1.7;text-shadow:0 0 .8cqw currentColor}
 .scr.on{display:flex}
-h1{font-size:8.5cqw;margin:1cqw 0;color:var(--m);text-shadow:0 0 1.5cqw var(--m),.6cqw .6cqw 0 #306;line-height:1.1}
-h2{font-size:5cqw;margin:0 0 2cqw;color:var(--c)}
+h1{font-size:7.5cqw;margin:1cqw 0;color:var(--m);text-shadow:0 0 1.5cqw var(--m),.6cqw .6cqw 0 #306;line-height:1.1}
+h2{font-size:4cqw;margin:0 0 1cqw;color:var(--c)}
 p{margin:.4cqw 0}.dim{color:#1d9a0c}.s{font-size:2cqw}
 .cur{animation:bl 1s steps(1) infinite}
 ul{list-style:none;margin:3cqw 0 0;padding:0}
-#mi li{padding-left:4cqw;position:relative;font-size:4cqw;cursor:pointer;line-height:2}
+#mi li{padding-left:4cqw;position:relative;font-size:4cqw;cursor:pointer;line-height:1.6}
 #mi li.sel{color:var(--y)}#mi li.sel::before{content:">";position:absolute;left:0;animation:bl 1s steps(1) infinite}
-#hl li{display:flex;font-size:3.1cqw;line-height:1.55}#hl li span{flex:1;text-align:center}#hl li.me{color:var(--y);animation:bl .6s steps(1) infinite}
+#hl li{display:flex;font-size:2.4cqw;line-height:1.4}#hl li span{flex:1;text-align:center}#hl li.me{color:var(--y);animation:bl .6s steps(1) infinite}
 #over{align-items:center;text-align:center}#over h1{color:#ff3b3b;text-shadow:0 0 1.5cqw #f00}
-#slots{display:flex;gap:4cqw;justify-content:center;margin:2cqw 0}
-.col{display:flex;flex-direction:column;align-items:center;gap:1cqw}
-.sl{font-size:9cqw;color:var(--y);width:11cqw;text-align:center;border-bottom:.8cqw solid var(--g)}.sl.a{border-color:var(--m)}
-button,.btn{font:inherit;font-size:4cqw;color:var(--c);background:none;border:.5cqw solid var(--c);padding:1cqw 3cqw;cursor:pointer}
+#slots{display:flex;gap:4cqw;justify-content:center;margin:1.5cqw 0}
+.col{display:flex;flex-direction:column;align-items:center;gap:.6cqw}
+.sl{font-size:7cqw;line-height:1.2;color:var(--y);width:9cqw;text-align:center;border-bottom:.8cqw solid var(--g)}.sl.a{border-color:var(--m)}
+button,.btn{font:inherit;font-size:3cqw;line-height:1;color:var(--c);background:none;border:.4cqw solid var(--c);padding:.8cqw 2.5cqw;cursor:pointer}.btn{font-size:3.5cqw}
 #nm{align-items:center;text-align:center}
 #rot{display:none;position:fixed;inset:0;background:#000;z-index:9;align-items:center;justify-content:center;text-align:center;font-size:4.5vw;line-height:2;padding:8vw}
 @media(orientation:portrait){#rot{display:flex}}
 </style></head><body>
 <div id="crt"><div id="stage"><canvas id="cv" width="600" height="360"></canvas><div id="hud"><span id="sc">00</span></div>
-<div class="scr on" id="menu"><p class="dim s">KEEN OS V1.0 &nbsp;640K RAM OK</p><h1>PADDLE<br>WAR</h1><p>C:\&gt;PADDLE.EXE<span class="cur">_</span></p>
+<div class="scr on" id="menu"><p class="dim s">KEEN OS V1.0 &nbsp;640K RAM OK</p><h1>PADDLE WAR</h1><p>C:\&gt;PADDLE.EXE<span class="cur">_</span></p>
 <ul id="mi"><li data-a="play">PELAA</li><li data-a="scores">ENNÄTYKSET</li><li data-a="snd">ÄÄNET: <b id="sv">POIS</b></li></ul></div>
-<div class="scr" id="over"><h1>GAME<br>OVER</h1><h2 id="fs">00</h2><p id="tt"></p><p class="dim s">KOSKETA JATKAAKSESI<span class="cur">_</span></p></div>
-<div class="scr" id="nm"><h2>UUSI ENNÄTYS!</h2><p>SYÖTÄ NIMIMERKKI</p><div id="slots"></div><div class="btn" id="ok">OK</div><p class="dim s">ÄLÄ KIROILE. PHOEBE KUULEE.</p></div>
+<div class="scr" id="over"><h1>GAME OVER</h1><h2 id="fs">00</h2><p id="tt"></p><p class="dim s">KOSKETA JATKAAKSESI<span class="cur">_</span></p></div>
+<div class="scr" id="nm"><h2>UUSI ENNÄTYS! NIMI:</h2><div id="slots"></div><div class="btn" id="ok">OK</div><p class="dim s">ÄLÄ KIROILE. PHOEBE KUULEE.</p></div>
 <div class="scr" id="hs"><h2>TOP 10</h2><ul id="hl"></ul><p class="dim s" id="hn"></p></div>
 </div></div>
 <div id="rot">KÄÄNNÄ PUHELIN<br>VAAKAAN ↻</div>
 <script>
-const $=s=>document.querySelector(s),cv=$('#cv'),x=cv.getContext('2d'),W=600,H=360,PH=64,BS=10;
+const $=s=>document.querySelector(s),cv=$('#cv'),x=cv.getContext('2d'),W=600,H=360,PH=64,BS=10,PX=36;
 let st='menu',sel=0,snd=localStorage.snd==='1',tok=null,tops=[],score=0,last=0,py=148,cy=148,bx=0,by=0,bvx=0,bvy=0,sp=260,off=0,overAt=0,ci=0,sub=0,t=0;
 let L=(localStorage.nm||'AAA').split('');const keys={};
 const TAUNT=['*PIIP* - PHOEBE KIROILISI JO','MS. PAC-MAN OLISI JO KIROTTU','PALLO OHI. ÄLÄ KIROILE.','SEURAAVALLA KERRALLA PAREMMIN'];
@@ -63,12 +63,12 @@ function step(dt){
  cy+=Math.max(-cs*dt,Math.min(cs*dt,tg-cy));cy=Math.max(0,Math.min(H-PH,cy));
  bx+=bvx*dt;by+=bvy*dt;
  if(by<0){by=0;bvy=-bvy;beep(220,.04)}if(by>H-BS){by=H-BS;bvy=-bvy;beep(220,.04)}
- if(bvx<0&&bx<30&&bx>10&&by+BS>py&&by<py+PH){bounce(py,30,1);score++;$('#sc').textContent=String(score).padStart(2,'0');off=(Math.random()-.5)*PH*.9;beep(330+sp/2,.06)}
- else if(bvx>0&&bx+BS>W-30&&bx<W-10&&by+BS>cy&&by<cy+PH){bounce(cy,W-30-BS,-1);beep(260,.06)}
+ if(bvx<0&&bx<PX+10&&bx>PX-10&&by+BS>py&&by<py+PH){bounce(py,PX+10,1);score++;$('#sc').textContent=String(score).padStart(2,'0');off=(Math.random()-.5)*PH*.9;beep(330+sp/2,.06)}
+ else if(bvx>0&&bx+BS>W-PX-10&&bx<W-PX+10&&by+BS>cy&&by<cy+PH){bounce(cy,W-PX-10-BS,-1);beep(260,.06)}
  if(bx<-BS)gameOver();else if(bx>W){sp=Math.max(260,sp*.9);serve(-1)}}
 function draw(){x.fillStyle='#020a04';x.fillRect(0,0,W,H);x.fillStyle='#0f03';for(let i=0;i<H;i+=20)x.fillRect(W/2-2,i,4,10);
- if(st!=='play')return;x.shadowBlur=12;x.shadowColor=x.fillStyle='#00f0ff';x.fillRect(20,py,10,PH);
- x.shadowColor=x.fillStyle='#ff2bd6';x.fillRect(W-30,cy,10,PH);x.shadowColor=x.fillStyle='#fff200';x.fillRect(bx,by,BS,BS);x.shadowBlur=0}
+ if(st!=='play')return;x.shadowBlur=12;x.shadowColor=x.fillStyle='#00f0ff';x.fillRect(PX,py,10,PH);
+ x.shadowColor=x.fillStyle='#ff2bd6';x.fillRect(W-PX-10,cy,10,PH);x.shadowColor=x.fillStyle='#fff200';x.fillRect(bx,by,BS,BS);x.shadowBlur=0}
 function loop(ts){const dt=Math.min((ts-last)/1000||0,.05);last=ts;if(st==='play')step(dt);draw();requestAnimationFrame(loop)}
 const loadTop=()=>fetch('/api/scores').then(r=>r.json()).then(j=>{tops=j.scores;return true}).catch(()=>false);
 function render(me){let h='',f=0;for(let i=0;i<10;i++){const r=tops[i],m=me&&r&&!f&&r.name===me.name&&r.score===me.score;if(m)f=1;h+=`<li${m?' class=me':''}><span>${String(i+1).padStart(2,'0')}</span><span>${r?r.name:'---'}</span><span>${r?String(r.score).padStart(3,'0'):'---'}</span></li>`}$('#hl').innerHTML=h}
