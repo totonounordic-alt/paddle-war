@@ -40,12 +40,23 @@ button,.btn{font:inherit;font-size:3cqw;line-height:1;color:var(--c);background:
 @keyframes pop{0%{opacity:1;transform:scale(.6)}15%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0}}
 #rot{display:none;position:fixed;inset:0;background:#000;z-index:9;align-items:center;justify-content:center;text-align:center;font-size:4.5vw;line-height:2;padding:8vw}
 @media(orientation:portrait){#rot{display:flex}}
+#fb{justify-content:flex-start;gap:1.4cqw;padding:3.5cqw 8cqw}#fb h2{margin:0}
+#fb textarea,#fb input{font-family:inherit;font-size:max(16px,2.4cqw);line-height:1.5;background:#000;color:var(--g);border:.3cqw solid #1d9a0c;border-radius:0;padding:1cqw 1.4cqw;width:100%;caret-color:var(--y);-webkit-user-select:text;user-select:text;touch-action:auto;text-shadow:none}
+#fb textarea{flex:1;min-height:0;resize:none}#fb textarea:focus,#fb input:focus{outline:none;border-color:var(--g);box-shadow:0 0 1cqw #39ff1466}
+#fb ::placeholder{color:#1d9a0c;opacity:1}
+
+.fbr{display:flex;align-items:center;gap:1.5cqw}.fbr button{font-size:2.6cqw}#fbs{color:#000;background:var(--g);border-color:var(--g)}
+#fbo{flex:1;margin:0;font-size:2cqw;line-height:1.5;color:var(--y);text-align:right}#fbo.err{color:#ff3b3b}
+#crt.kb #stage{aspect-ratio:auto;width:100%;height:100%;border-radius:0}#crt.kb #stage::after{display:none}
+#fb.kb{padding:1cqw 3cqw;gap:.8cqw}#fb.kb h2,#fb.kb #fbn{display:none}#fb.kb textarea{min-height:2.6em}#fb.kb textarea,#fb.kb input{padding:.5cqw 1cqw}#fb.kb #fbo{text-align:left;font-size:max(11px,1.6cqw)}#fb.kb .fbr button{font-size:max(13px,1.9cqw);padding:.6cqw 2cqw}
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
 </style></head><body>
 <div id="crt"><div id="stage"><canvas id="cv" width="600" height="360"></canvas><div id="hud"><span id="sc">00</span></div><div id="fl"></div>
 <div class="scr on" id="menu"><p class="dim s">KEEN OS V<span id="ver">DEV</span> &nbsp;640K RAM OK</p><h1>PADDLE WAR</h1><p>C:\&gt;PADDLE.EXE<span class="cur">_</span></p>
-<ul id="mi"><li data-a="play">PELAA</li><li data-a="scores">ENNÄTYKSET</li><li data-a="lvl">TASO: <b id="lv"></b></li><li data-a="snd">ÄÄNET: <b id="sv">POIS</b></li><li data-a="help">OHJEET</li></ul></div>
+<ul id="mi"><li data-a="play">PELAA</li><li data-a="scores">ENNÄTYKSET</li><li data-a="lvl">TASO: <b id="lv"></b></li><li data-a="snd">ÄÄNET: <b id="sv">POIS</b></li><li data-a="help">OHJEET</li><li data-a="fb">PALAUTE</li></ul></div>
 <div class="scr" id="pick"><h2>VALITSE VAIKEUSTASO</h2><ul id="lvl"></ul><p class="dim s">TASON VOI VAIHTAA MYÖHEMMIN VALIKOSTA</p></div>
 <div class="scr" id="help"><h2 id="hht"></h2><div id="hhb"></div><p class="dim s" id="hhn"></p></div>
+<div class="scr" id="fb"><h2>C:\&gt;PALAUTE.EXE<span class="cur">_</span></h2><textarea id="fbm" maxlength="500" placeholder="KIRJOITA PALAUTTEESI TÄHÄN"></textarea><input id="fbc" maxlength="100" autocomplete="email" placeholder="YHTEYSTIETO (VAPAAEHTOINEN)"><input id="fbw" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true"><div class="fbr"><span class="dim s" id="fbn">0/500</span><p id="fbo"></p><button id="fbx">PERUUTA</button><button id="fbs">LÄHETÄ</button></div></div>
 <div class="scr" id="over"><h1>GAME OVER</h1><h2 id="fs">00</h2><p id="tt"></p><p class="dim s">KOSKETA JATKAAKSESI<span class="cur">_</span></p></div>
 <div class="scr" id="nm"><h2>UUSI ENNÄTYS! NIMI:</h2><div id="slots"></div><div class="btn" id="ok">OK</div><p class="dim s">ÄLÄ KIROILE. PELIHALLIN VALVOJA KATSOO.</p></div>
 <div class="scr" id="hs"><div id="hh"><button id="lp">&lt;</button><h2 id="ln">TOP 10</h2><button id="rp">&gt;</button></div><ul id="hl"></ul><p class="dim s" id="hn"></p></div>
@@ -93,7 +104,7 @@ function bleep(){if(!snd)return;try{ac=ac||new(window.AudioContext||webkitAudioC
 const items=[...document.querySelectorAll('#mi li')],NI=items.length;
 function mark(){items.forEach((e,i)=>e.classList.toggle('sel',i===sel));$('#sv').textContent=snd?'PÄÄLLÄ':'POIS';$('#lv').textContent=lev.name}
 function setLv(l){lev=l;localStorage.lvl=l.id;mark()}
-function act(a){if(a==='play')start();else if(a==='scores')showScores(null,lev.id);else if(a==='lvl'){setLv(LEVELS[(LEVELS.indexOf(lev)+1)%LEVELS.length]);beep(660,.08)}else if(a==='help')showHelp(0);else{snd=!snd;localStorage.snd=snd?1:0;mark();beep(880,.1)}}
+function act(a){if(a==='play')start();else if(a==='scores')showScores(null,lev.id);else if(a==='lvl'){setLv(LEVELS[(LEVELS.indexOf(lev)+1)%LEVELS.length]);beep(660,.08)}else if(a==='help')showHelp(0);else if(a==='fb')openFb();else{snd=!snd;localStorage.snd=snd?1:0;mark();beep(880,.1)}}
 items.forEach((e,i)=>e.addEventListener('pointerdown',ev=>{ev.stopPropagation();sel=i;mark();act(e.dataset.a)}));
 // --- ensimmäisen käynnistyksen tasovalinta ---
 const pitems=LEVELS.map((l,i)=>{const li=document.createElement('li');li.textContent=l.name;li.addEventListener('pointerdown',ev=>{ev.stopPropagation();psel=i;pmark();choose()});$('#lvl').appendChild(li);return li});
@@ -139,7 +150,7 @@ async function submit(){if(sub)return;sub=1;const nm=L.join('');localStorage.nm=
 $('#ok').addEventListener('pointerdown',e=>{e.stopPropagation();submit()});
 const stg=$('#stage');function mv(e){if(st!=='play')return;const r=cv.getBoundingClientRect();py=Math.max(0,Math.min(H-PH,(e.clientY-r.top)/r.height*H-PH/2))}
 stg.addEventListener('pointermove',mv);stg.addEventListener('pointerdown',e=>{mv(e);if(st==='over')next();else if(st==='hs')show('menu');else if(st==='help')helpNav(1)});
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=1;const go=k==='enter'||k===' ',up=k==='arrowup'||k==='w',dn=k==='arrowdown'||k==='s';
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(st==='fb'){if(k==='escape')closeFb();return}keys[k]=1;const go=k==='enter'||k===' ',up=k==='arrowup'||k==='w',dn=k==='arrowdown'||k==='s';
  if(st==='menu'){if(up)sel=(sel+NI-1)%NI;else if(dn)sel=(sel+1)%NI;else if(go)act(items[sel].dataset.a);mark()}
  else if(st==='pick'){if(up)psel=(psel+LEVELS.length-1)%LEVELS.length;else if(dn)psel=(psel+1)%LEVELS.length;else if(go)choose();pmark()}
  else if(st==='over'){if(go)next()}
@@ -150,5 +161,25 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=1;const go=k=
  else if(st==='play'&&k==='escape')show('menu');
  if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault()});
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+// --- palaute: lähetetään yhteiseen aihio.fyi-palautepalveluun ---
+const FB_URL='https://palaute.aihio.fyi/api/palaute',fbm=$('#fbm'),fbo=$('#fbo');let fbBusy=0;
+function fbSay(t,err){fbo.textContent=t;fbo.className=err?'err':''}
+function openFb(){fbSay('');show('fb');if(matchMedia('(pointer:fine)').matches)setTimeout(()=>fbm.focus(),60)}
+function closeFb(){document.activeElement&&document.activeElement.blur&&document.activeElement.blur();show('menu');fitKb()}
+fbm.addEventListener('input',()=>$('#fbn').textContent=fbm.value.length+'/500');
+async function sendFb(){if(fbBusy)return;const msg=fbm.value.trim();if(msg.length<2)return fbSay('KIRJOITA ENSIN VIESTI.',1);
+ fbBusy=1;fbSay('LÄHETETÄÄN...');
+ try{const r=await fetch(FB_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({project:'paddle-war',message:msg,contact:$('#fbc').value,website:$('#fbw').value,version:$('#ver').textContent,device:matchMedia('(pointer:coarse)').matches?'mobile':'desktop'})});
+  if(r.ok){fbSay('VIESTI LÄHETETTY. KIITOS!');beep(784,.1);fbm.value='';$('#fbc').value='';$('#fbn').textContent='0/500';setTimeout(()=>{if(st==='fb')closeFb()},1600)}
+  else fbSay(r.status===429?'LIIAN MONTA VIESTIÄ. YRITÄ MYÖHEMMIN.':'LÄHETYS EPÄONNISTUI. YRITÄ UUDELLEEN.',1)}
+ catch(e){fbSay('EI YHTEYTTÄ PALVELIMEEN.',1)}fbBusy=0}
+$('#fbs').addEventListener('click',sendFb);$('#fbx').addEventListener('click',closeFb);
+$('#fb').addEventListener('pointerdown',e=>e.stopPropagation());
+// Puhelimen näppäimistö: kutistetaan peliruutu näkyvään alueeseen, ettei kirjoituskenttä jää näppäimistön alle.
+function fitKb(){const v=window.visualViewport,c=$('#crt').style,on=st==='fb'&&/TEXTAREA|INPUT/.test((document.activeElement||{}).tagName||'');
+ const kb=on&&!!v&&v.height<innerHeight*.85;$('#fb').classList.toggle('kb',kb);$('#crt').classList.toggle('kb',kb);
+ if(on&&v){c.top=v.offsetTop+'px';c.height=v.height+'px';c.bottom='auto'}else{c.top='';c.height='';c.bottom=''}}
+if(window.visualViewport){visualViewport.addEventListener('resize',fitKb);visualViewport.addEventListener('scroll',fitKb)}
+addEventListener('focusin',fitKb);addEventListener('focusout',()=>setTimeout(fitKb,50));
 const BUILD='__BUILD__';$('#ver').textContent=BUILD.startsWith('__')?'1.0.DEV':BUILD;mark();pmark();if(firstRun)show('pick');requestAnimationFrame(loop);if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');
 </script></body></html>
