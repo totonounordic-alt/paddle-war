@@ -23,8 +23,8 @@ export async function onRequest({ request, env, params }) {
     const [t, n, sig] = String(b.token || '').split('.');
     if (!sig || sig !== await sign(`${t}.${n}`, env.SESSION_SECRET)) return json({ error: 'token' }, 403);
     const secs = (Date.now() - Number(t)) / 1000, score = b.score;
-    // Pisteitä ei voi kertyä nopeammin kuin ~0,7 s / piste, eikä token vanhene yli tunnissa
-    if (!Number.isInteger(score) || score < 1 || score > 999 || secs > 3600 || secs < score * 0.7) return json({ error: 'score' }, 400);
+    // Pisteitä ei voi kertyä nopeammin kuin ~0,1 s / piste (tietokoneen virhe antaa +5), eikä token vanhene yli tunnissa
+    if (!Number.isInteger(score) || score < 1 || score > 999 || secs > 3600 || secs < score * 0.1) return json({ error: 'score' }, 400);
     const iph = (await sign(request.headers.get('CF-Connecting-IP') || '', env.SESSION_SECRET)).slice(0, 16);
     const r = await env.DB.prepare('SELECT COUNT(*) c FROM scores WHERE iph=? AND ts>?').bind(iph, Date.now() - 600000).first();
     if (r.c >= 5) return json({ error: 'rate' }, 429);
