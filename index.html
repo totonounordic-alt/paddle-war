@@ -27,7 +27,7 @@ ul{list-style:none;margin:3cqw 0 0;padding:0}
 #lvl li{font-size:3.6cqw;line-height:1.8}
 #mi li.sel,#lvl li.sel{color:var(--y)}#mi li.sel::before,#lvl li.sel::before{content:">";position:absolute;left:0;animation:bl 1s steps(1) infinite}
 #hh{display:flex;align-items:center;justify-content:center;gap:3cqw;margin-bottom:1cqw}#hh h2{margin:0;min-width:48cqw;text-align:center}#hh button{font-size:3.6cqw;padding:.8cqw 2cqw}
-#help{font-size:2.5cqw;line-height:1.65}#help p{margin:1.1cqw 0}#help h2{margin-bottom:1.5cqw}.y{color:var(--y)}
+#help{font-size:2.6cqw;line-height:1.5;padding:4cqw 10cqw}#help h2{margin-bottom:2.5cqw}#hhb{display:grid;grid-template-columns:auto 1fr;column-gap:4cqw;row-gap:1.6cqw}.hr{display:contents}.hn{grid-column:1/-1;margin:1.2cqw 0 0;color:#1d9a0c;font-size:2.2cqw;line-height:1.6}#hhn{margin-top:3cqw}.y{color:var(--y)}
 #hl li{display:flex;font-size:2.4cqw;line-height:1.4}#hl li span{flex:1;text-align:center}#hl li.me{color:var(--y);animation:bl .6s steps(1) infinite}
 #over{align-items:center;text-align:center}#over h1{color:#ff3b3b;text-shadow:0 0 1.5cqw #f00}
 #slots{display:flex;gap:4cqw;justify-content:center;margin:1.5cqw 0}
@@ -60,11 +60,12 @@ const LEVELS=[
  {id:'normal',name:"LET'S ROCK",   s0:260,smax:700,acc:1.05,ph:64,c0:150,cg:8, err:.9},
  {id:'hard',  name:'COME GET SOME',s0:300,smax:780,acc:1.05,ph:52,c0:170,cg:10,err:.7}];
 const CH=64; // tietokoneen mailan korkeus
+// Ohjesivut: [otsikko, rivit]. Rivi on joko [nimike, selitys] tai pelkkä teksti.
 const HELP=[
- ['PELI',['TORJU PALLO VASEMMALLA MAILALLASI. JOS PALLO MENEE OHI, PELI PÄÄTTYY.','OHJAUS: VEDÄ SORMELLA YLÖS JA ALAS, TAI HIIRELLÄ, W/S, A/D TAI NUOLINÄPPÄIMILLÄ.','PALLO NOPEUTUU JOKAISESTA OSUMASTA. KÄÄNNÄ PUHELIN VAAKAAN.']],
- ['PISTEET',['+1 JOKAISESTA TORJUNNASTA.','+5 JA <span class=y>NICE!</span>, KUN TIETOKONE EI OSU PALLOON.','KEHUVÄLÄHDYS PISTEISSÄ 10, 20, 30, 40, 50, 60 JA 69, SEN JÄLKEEN JOKAISESTA KYMMENESTÄ.']],
- ['TASOT JA ENNÄTYKSET',['<span class=y>PIECE OF CAKE</span> ON HELPPO: HITAAMPI PALLO JA PIDEMPI MAILA. <span class=y>LET\'S ROCK</span> ON NORMAALI. <span class=y>COME GET SOME</span> ON VAIKEA: NOPEA PALLO JA LYHYT MAILA.','JOKAISELLA TASOLLA ON OMA TOP 10. NIMI ON KOLME KIRJAINTA, KIROSANAT SENSUROIDAAN.','ÄÄNET OVAT OLETUKSENA POIS. LAITA NE PÄÄLLE VALIKOSTA.']],
- ['KOTINÄYTÖLLE',['ANDROID (CHROME): SELAIMEN VALIKKO (KOLME PISTETTÄ) -> LISÄÄ ALOITUSNÄYTTÖÖN TAI ASENNA SOVELLUS.','IPHONE (SAFARI): JAA-PAINIKE -> LISÄÄ KOTI-VALIKKOON.','SEN JÄLKEEN PELI AVAUTUU KOKORUUTUNA KUIN SOVELLUS.']]];
+ ['PELI',[['TAVOITE','TORJU PALLO OMALLA MAILALLASI'],['OHI?','PELI PÄÄTTYY'],['OHJAUS','SORMI, HIIRI, W/S TAI NUOLET'],['VINKKI','PALLO NOPEUTUU JOKA OSUMASTA'],['ÄÄNET','PÄÄLLE VALIKOSTA']]],
+ ['PISTEET',[['+1','JOKAINEN TORJUNTA'],['+5','TIETOKONE EI OSU = NICE!'],['KEHUT','10, 20 ... 60, 69 JA JOKA 10']]],
+ ['TASOT',[['PIECE OF CAKE','HELPPO'],["LET'S ROCK",'NORMAALI'],['COME GET SOME','VAIKEA'],'JOKAISELLA TASOLLA OMA TOP 10. NIMESSÄ 3 KIRJAINTA, KIROSANAT SENSUROIDAAN.']],
+ ['KOTINÄYTÖLLE',[['ANDROID','VALIKKO > LISÄÄ ALOITUSNÄYTTÖÖN'],['IPHONE','JAA > LISÄÄ KOTI-VALIKKOON'],'PELI AUKEAA SEN JÄLKEEN KOKORUUTUNA.']]];
 const $=s=>document.querySelector(s),cv=$('#cv'),x=cv.getContext('2d'),W=600,H=360,BS=10,PX=36;
 let PH=64,lev=LEVELS[1];
 let st='menu',sel=0,snd=localStorage.snd==='1',tok=null,tops={},score=0,last=0,py=148,cy=148,bx=0,by=0,bvx=0,bvy=0,sp=260,off=0,overAt=0,ci=0,sub=0,hv=1,hp=0,psel=1,mine=null;
@@ -85,7 +86,7 @@ const pitems=LEVELS.map((l,i)=>{const li=document.createElement('li');li.textCon
 function pmark(){pitems.forEach((e,i)=>e.classList.toggle('sel',i===psel))}
 function choose(){setLv(LEVELS[psel]);firstRun=false;beep(784,.1);show('menu')}
 // --- ohjeet ---
-function showHelp(p){hp=p;show('help');$('#hht').textContent=HELP[p][0]+' ('+(p+1)+'/'+HELP.length+')';$('#hhb').innerHTML=HELP[p][1].map(t=>'<p>'+t+'</p>').join('');$('#hhn').textContent=p<HELP.length-1?'KOSKETA TAI NUOLI OIKEALLE: SEURAAVA':'KOSKETA PALATAKSESI VALIKKOON'}
+function showHelp(p){hp=p;show('help');$('#hht').textContent=HELP[p][0]+' ('+(p+1)+'/'+HELP.length+')';$('#hhb').innerHTML=HELP[p][1].map(r=>Array.isArray(r)?'<div class=hr><span class=y>'+r[0]+'</span><span>'+r[1]+'</span></div>':'<p class=hn>'+r+'</p>').join('');$('#hhn').textContent=p<HELP.length-1?'KOSKETA: SEURAAVA >':'KOSKETA: VALIKKOON'}
 function helpNav(d){if(d>0&&hp===HELP.length-1)show('menu');else showHelp(Math.max(0,hp+d))}
 const MS={10:'GOOD!',20:'EXCELLENT!',30:'GREAT JOB!',40:'AMAZING!',50:'PHENOMENAL!',60:'YOU ARE A ROCKSTAR!',69:'NICE!'};let nm=10;
 const nxt=n=>n>=60&&n<69?69:(Math.floor(n/10)+1)*10;
