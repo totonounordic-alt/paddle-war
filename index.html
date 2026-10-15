@@ -55,11 +55,12 @@ button,.btn{font:inherit;font-size:3cqw;line-height:1;color:var(--c);background:
 // id = tunniste ennätyslistalle (pienet kirjaimet/numerot, max 12 merkkiä, älä vaihda myöhemmin).
 // s0/smax = pallon alku- ja enimmäisnopeus, acc = nopeutus osumasta, ph = oman mailan korkeus,
 // c0/cg = tietokoneen alkunopeus ja lisä per piste (max 45 pisteeseen), err = tietokoneen erehtyvyys (suurempi = erehtyy useammin)
+// ch = tietokoneen mailan korkeus, oops = todennäköisyys (0-1), että tietokone tähtää tahallaan ohi
 const LEVELS=[
- {id:'easy',  name:'PIECE OF CAKE',s0:220,smax:560,acc:1.05,ph:80,c0:130,cg:6, err:1.1},
- {id:'normal',name:"LET'S ROCK",   s0:260,smax:700,acc:1.05,ph:64,c0:150,cg:8, err:.9},
- {id:'hard',  name:'COME GET SOME',s0:300,smax:780,acc:1.05,ph:52,c0:170,cg:10,err:.7}];
-const CH=64; // tietokoneen mailan korkeus
+ {id:'easy',  name:'SLOW',  s0:220,smax:560,acc:1.05,ph:80,c0:130,cg:6, err:1.1,ch:24,oops:.25},
+ {id:'normal',name:'NORMAL',s0:260,smax:700,acc:1.05,ph:64,c0:150,cg:8, err:.9, ch:64,oops:0},
+ {id:'hard',  name:'TURBO', s0:300,smax:780,acc:1.05,ph:52,c0:170,cg:10,err:.7, ch:64,oops:0}];
+let CH=64;
 // Ohjesivut: [otsikko, rivit]. Rivi on joko [nimike, selitys] tai pelkkä teksti.
 const HELP=[
  ['PELI',[
@@ -71,9 +72,9 @@ const HELP=[
   ['+5 JA NICE!','KUN TIETOKONE EI OSU PALLOON.'],
   'KEHUJA SATELEE TASAPISTEISSA.']],
  ['TASOT JA ENNÄTYKSET',[
-  ['PIECE OF CAKE','HELPPO: HITAAMPI PALLO, PIDEMPI MAILA.'],
-  ["LET'S ROCK",'NORMAALI.'],
-  ['COME GET SOME','VAIKEA: NOPEA PALLO, LYHYT MAILA.'],
+  ['SLOW','HELPPO: HITAAMPI PALLO, PIDEMPI MAILA.'],
+  ['NORMAL','NORMAALI.'],
+  ['TURBO','VAIKEA: NOPEA PALLO, LYHYT MAILA.'],
   'KIROSANAT SENSUROIDAAN.']],
  ['KOTINÄYTÖLLE',[
   ['ANDROID (CHROME)','SELAIMEN VALIKKO (KOLME PISTETTÄ) -> LISÄÄ ALOITUSNÄYTTÖÖN TAI ASENNA SOVELLUS.'],
@@ -85,7 +86,7 @@ let st='menu',sel=0,snd=localStorage.snd==='1',tok=null,tops={},score=0,last=0,p
 const getLv=id=>LEVELS.find(l=>l.id===id);
 let firstRun=!getLv(localStorage.lvl);lev=getLv(localStorage.lvl)||LEVELS[1];
 let L=(localStorage.nm||'AAA').split('');const keys={};
-const TAUNT=['PUHALLA KASETTIIN JA YRITÄ UUDELLEEN','FINISH HIM! ...PALLO VOITTI','NOKIAN SNAKE KESTI PIDEMPÄÄN','TAMAGOTCHIKIN SELVISI PIDEMPÄÄN','HADOUKEN EI AUTTANUT TÄHÄN PALLOON','GAME OVER, MAN! GAME OVER!'];
+const TAUNT=['ABORT, RETRY, FAIL?','PRESS ANY KEY TO CONTINUE','PLAYER 1 READY','CLOSE BUT NO CIGAR','INSERT COIN','WE WERE ON THE VERGE OF GREATNESS'];
 function show(id){st=id;if(id!=="play")$("#fl").classList.remove("on");document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id===id));$('#hud').style.display=id==='play'?'block':'none'}
 let ac;function beep(f,d=.08,ty='square'){if(!snd)return;try{ac=ac||new(window.AudioContext||webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.value=.08;g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 function bleep(){if(!snd)return;try{ac=ac||new(window.AudioContext||webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;o.type='sine';o.frequency.setValueAtTime(1000,n);o.frequency.setValueAtTime(1000,n+.6);o.frequency.exponentialRampToValueAtTime(120,n+.95);g.gain.setValueAtTime(.1,n);g.gain.setValueAtTime(.1,n+.6);g.gain.linearRampToValueAtTime(0,n+.95);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+.95)}catch(e){}}
@@ -106,7 +107,7 @@ const nxt=n=>n>=60&&n<69?69:(Math.floor(n/10)+1)*10;
 function flash(t){const e=$('#fl');e.textContent=t;e.style.fontSize=Math.min(6.5,88/t.length)+'cqw';e.classList.remove('on');void e.offsetWidth;e.classList.add('on');[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.09),i*70))}
 function addScore(n,t){score+=n;$('#sc').textContent=String(score).padStart(2,'0');let m=null;while(score>=nm){m=MS[nm]||'NICE!';nm=nxt(nm)}if(m)flash(m);else if(t)flash(t)}
 function serve(d){bx=W/2;by=H/2;const a=(Math.random()-.5)*.8;bvx=d*Math.cos(a)*sp;bvy=Math.sin(a)*sp;off=0}
-function start(){PH=lev.ph;score=0;nm=10;sp=lev.s0;py=H/2-PH/2;cy=H/2-CH/2;serve(1);$('#sc').textContent='00';tok=null;mine=lev;show('play');beep(660,.1);fetch('/api/session?d='+lev.id).then(r=>r.json()).then(j=>tok=j.token).catch(()=>{})}
+function start(){PH=lev.ph;CH=lev.ch;score=0;nm=10;sp=lev.s0;py=H/2-PH/2;cy=H/2-CH/2;serve(1);$('#sc').textContent='00';tok=null;mine=lev;show('play');beep(660,.1);fetch('/api/session?d='+lev.id).then(r=>r.json()).then(j=>tok=j.token).catch(()=>{})}
 function bounce(p,h,nx,d){const r=Math.max(-1,Math.min(1,(by+BS/2-(p+h/2))/(h/2)));sp=Math.min(sp*mine.acc,mine.smax);const a=r*1.05;bx=nx;bvx=d*Math.cos(a)*sp;bvy=Math.sin(a)*sp}
 function step(dt){
  const v=(keys.s||keys.d||keys.arrowdown?1:0)-(keys.w||keys.a||keys.arrowup?1:0);py=Math.max(0,Math.min(H-PH,py+v*400*dt));
@@ -114,7 +115,7 @@ function step(dt){
  cy+=Math.max(-cs*dt,Math.min(cs*dt,tg-cy));cy=Math.max(0,Math.min(H-CH,cy));
  bx+=bvx*dt;by+=bvy*dt;
  if(by<0){by=0;bvy=-bvy;beep(220,.04)}if(by>H-BS){by=H-BS;bvy=-bvy;beep(220,.04)}
- if(bvx<0&&bx<PX+10&&bx>PX-10&&by+BS>py&&by<py+PH){bounce(py,PH,PX+10,1);addScore(1);off=(Math.random()-.5)*CH*mine.err;beep(330+sp/2,.06)}
+ if(bvx<0&&bx<PX+10&&bx>PX-10&&by+BS>py&&by<py+PH){bounce(py,PH,PX+10,1);addScore(1);off=Math.random()<mine.oops?(by<H/2?1:-1)*(CH/2+BS+20):(Math.random()-.5)*CH*mine.err;beep(330+sp/2,.06)}
  else if(bvx>0&&bx+BS>W-PX-10&&bx<W-PX+10&&by+BS>cy&&by<cy+CH){bounce(cy,CH,W-PX-10-BS,-1);beep(260,.06)}
  if(bx<-BS)gameOver();else if(bx>W){sp=Math.max(mine.s0,sp*.9);serve(-1);addScore(5,'NICE! +5')}}
 function draw(){x.fillStyle='#020a04';x.fillRect(0,0,W,H);
